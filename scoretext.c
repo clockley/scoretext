@@ -240,13 +240,7 @@ void processLine(struct kreq req) {
 			if (lastSpace != NULL && !(strstr(lastSpace, ".") || strstr(lastSpace, "?") || strstr(lastSpace, "!")))
 				++sentences;
 
-			char *dash;
-
-			if (lastSpace != NULL) {
-				dash = strsep(&lastSpace, "-");
-			} else {
-				dash = strsep(&line, "-");
-			}
+			char *dash = strsep(&line, "-");
 
 			while (dash) {
 				char *word = strsep(&dash, " ");
