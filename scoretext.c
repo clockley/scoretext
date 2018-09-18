@@ -307,7 +307,7 @@ void processLine(struct kreq req) {
 	double fleschKincaid = .39 * wordsOverSentences + (11.8 * ((double)syllables / (double)words) - 15.59);
 	double smogScore = ((double)1.0430 * (double)sqrt(pollysyllables * (double)30.0 / (double)sentences)) + 3.1291;
 	double colemanLiau = .0588 * ((((double)characters / (double)words)) * 100.0) - (.269 * (((double)sentences / (double)words)) * 100.0) - 15.8;
-	double avg = (smogScore + fleschKincaid + ari + colemanLiau) / 4;
+	double avg = (smogScore + fleschKincaid + ari + colemanLiau) / 4.0;
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 
 	khttp_write(&req, b,
