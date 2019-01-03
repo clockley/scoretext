@@ -40,7 +40,6 @@
 #include <sys/wait.h>
 #include <opc/opc.h>
 #include "json.h"
-#include <magic.h>
 #include <unistd.h>
 #include <stdio.h>
 
