@@ -72,6 +72,7 @@ static ssize_t countSyllables(char *w, size_t s) {
 	ssize_t num = 0;
 	ssize_t dc = 0;
 	ssize_t numberOfVowelLetters = 0;
+	bool hasY = false;
 
 	if (s == 1)
 		return 1;
@@ -81,6 +82,9 @@ static ssize_t countSyllables(char *w, size_t s) {
 	}
 
 	for (size_t i = 0; i < s; i += 2) {
+		if (tolower(w[i]) == 'y' || tolower(w[i])) {
+			hasY = true;
+		}
 		if (isVowel(w[i])) {
 			++num;
 		}
@@ -93,8 +97,13 @@ static ssize_t countSyllables(char *w, size_t s) {
 		}
 	}
 
-	if (num == 0)
-		return s;
+	if (num == 0) {
+		if (hasY == false) {
+			return s;
+		} else {
+			return 1;
+		}
+	}
 
 	numberOfVowelLetters = num;
 	bool onlyDigraph = false;
@@ -128,17 +137,17 @@ static ssize_t countSyllables(char *w, size_t s) {
 		goto finalCheck;
 	}
 
-	if (s > 3 && strcasestr(w + s - 3, "es") != NULL && !matchesLetter(w[s - 3], "cgxsz")) {
+	if (s > 3 && strcasestr(w + s - 3, "es") != NULL && !matchesLetter(w[s - 4], "cgxsz")) {
 		if (!(s > 4 && strcasestr(w + s - 4, "ies"))) {
 			--num;
 		}
 		goto finalCheck;
 	}
 
-	if (s > 5 && strcasestr(w + s - 5, "ings") != NULL && (matchesLetter(w[s - 5], "aeiou") || onlyDigraph)) {
+	if (s > 5 && strcasestr(w + s - 5, "ings") != NULL && (matchesLetter(w[s - 6], "aeiou") || onlyDigraph)) {
 		++num;
 	}
-	if (s > 7 && strcasestr(w + s - 7, "ings") != NULL && charEqual(w[s - 6], w[s - 7])) {
+	if (s > 6 && strcasestr(w + s - 5, "ings") != NULL && charEqual(w[s - 6], w[s - 7])) {
 		--num;
 		goto finalCheck;
 	}
@@ -156,7 +165,7 @@ static ssize_t countSyllables(char *w, size_t s) {
 		--num;
 	}
  finalCheck:
-	if (s > 3 && w[s - 2] == 'e' && isVowel(w[s - 4]) && !skipFinalECheck) {
+	if (s > 3 && w[s - 1] == 'e' && isVowel(w[s - 3]) && !skipFinalECheck) {
 		--num;
 	}
 	if (numberOfVowelLetters == dc) {
@@ -166,7 +175,7 @@ static ssize_t countSyllables(char *w, size_t s) {
 	    && tolower(w[s - 2]) == 'y') {
 		++num;
 	}
-	if (num < 0)
+	if (num <= 0)
 		num = 1;
 
 	return num;
