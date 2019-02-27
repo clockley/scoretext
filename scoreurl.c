@@ -112,7 +112,7 @@ static inline _Bool isVowel(int c) {
 bool matchesLetter(char n, char *a) {
 	n = tolower(n);
 	for (size_t i = 0; a[i] != '\0'; ++i)
-		if (n == a[i])
+		if (tolower(n) == tolower(a[i]))
 			return true;
 	return false;
 }
