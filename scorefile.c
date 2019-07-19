@@ -249,6 +249,11 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
 
 
 bool loadAndReadWordFile(char *val, size_t valsz, char * buf) {
+
+	if (buf != NULL) {
+		return true;
+	}
+
 	mceTextReader_t reader = {0};
 	opc_error_t err = {0};
 	size_t size = 0;
