@@ -247,43 +247,39 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
     } mce_end_children(reader);
 }
 
-void processFile(struct kreq req) {
-	size_t words = 0;
-	size_t characters = 0;
-	size_t sentences = 0;
-	size_t syllables = 0;
-	size_t pollysyllables = 0;
-	size_t paragraph = 0;
-	char *buf = NULL;
-	char *b = NULL;
-	size_t size = 0;
+
+bool loadAndReadWordFile(char *val, size_t valsz, char * buf) {
 	mceTextReader_t reader = {0};
 	opc_error_t err = {0};
-
-	if (!req.fields)
-		goto endRequest;
-
-	opcContainer * container = opcContainerOpenMem(req.fields->val, req.fields->valsz, OPC_OPEN_READ_ONLY, NULL);
+	size_t size = 0;
+	opcContainer * container = opcContainerOpenMem(val, valsz, OPC_OPEN_READ_ONLY, NULL);
 	if (!container)
-		goto endRequest;
+		return false;
 
 	opcRelation rel = opcRelationFind(container, OPC_PART_INVALID, NULL, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
 
-	if (rel == OPC_RELATION_INVALID)
-		goto endRequest;
+	if (rel == OPC_RELATION_INVALID) {
+		opcContainerClose(container, OPC_CLOSE_NOW);
+		return false;
+	}
 
 	opcPart mainPart = opcRelationGetInternalTarget(container, OPC_PART_INVALID, rel);
-	if (mainPart != OPC_PART_INVALID)
-		if (xmlStrcmp(opcPartGetType(container, mainPart), "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml") != 0)
-			goto endRequest;
+	if (mainPart != OPC_PART_INVALID) {
+		if (xmlStrcmp(opcPartGetType(container, mainPart), "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml") != 0) {
+			opcContainerClose(container, OPC_CLOSE_NOW);
+			return false;
+		}
+	}
 
-	if (mainPart == OPC_PART_INVALID)
-		goto endRequest;
+	if (mainPart == OPC_PART_INVALID) {
+		opcContainerClose(container, OPC_CLOSE_NOW);
+		return false;
+	}
 
 	err = opcXmlReaderOpen(container, &reader, "/word/document.xml", NULL, NULL, 0);
 	if (err != OPC_ERROR_NONE) {
 		opcContainerClose(container, OPC_CLOSE_NOW);
-		goto endRequest;
+		return false;
 	}
 	FILE * fm = open_memstream(&buf, &size);
 
@@ -296,6 +292,26 @@ void processFile(struct kreq req) {
 	opcContainerClose(container, OPC_CLOSE_NOW);
 
 	fclose(fm);
+	return true;
+
+}
+
+void processFile(struct kreq req) {
+	size_t words = 0;
+	size_t characters = 0;
+	size_t sentences = 0;
+	size_t syllables = 0;
+	size_t pollysyllables = 0;
+	size_t paragraph = 0;
+	char *buf = NULL;
+	char *b = NULL;
+	size_t size = 0;
+
+	if (!req.fields)
+		goto endRequest;
+
+
+	loadAndReadWordFile(req.fields->val, req.fields->valsz, buf);
 
 	if (buf == NULL) {
 		goto endRequest;
