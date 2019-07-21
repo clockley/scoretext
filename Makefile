@@ -6,9 +6,12 @@ all: textscore scorefile scoreurl
 
 textscore:
 	$(CC) -o textscore.fcgi scoretext.c json.c grouptext.c $(CFLAGS)
+	strip textscore.fcgi
 
 scorefile:
 	$(CC) -o scorefile.fcgi scorefile.c json.c grouptext.c $(CFLAGS)
+	strip scorefile.fcgi
 
 scoreurl:
 	$(CC) -o scoreurl.fcgi scoreurl.c json.c grouptext.c $(CFLAGS)
+	strip scoreurl.fcgi
