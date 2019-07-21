@@ -1,6 +1,6 @@
 /*
     scoretext reads text from a web server and calculates readability and other statistics
-    Copyright (C) 2018 Christian Lockley
+    Copyright (C) 2018-2019 Christian Lockley
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
