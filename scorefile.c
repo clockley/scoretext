@@ -248,9 +248,9 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
 }
 
 
-bool loadAndReadWordFile(char *val, size_t valsz, char * buf) {
+bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 
-	if (buf != NULL) {
+	if (*buf != NULL) {
 		return true;
 	}
 
@@ -286,7 +286,7 @@ bool loadAndReadWordFile(char *val, size_t valsz, char * buf) {
 		opcContainerClose(container, OPC_CLOSE_NOW);
 		return false;
 	}
-	FILE * fm = open_memstream(&buf, &size);
+	FILE * fm = open_memstream(buf, &size);
 
     mce_start_document(&reader) {
         mce_start_element(&reader, NULL, NULL) {
@@ -316,7 +316,7 @@ void processFile(struct kreq req) {
 		goto endRequest;
 
 
-	loadAndReadWordFile(req.fields->val, req.fields->valsz, buf);
+	loadAndReadWordFile(req.fields->val, req.fields->valsz, &buf);
 
 	if (buf == NULL) {
 		goto endRequest;
