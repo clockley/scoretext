@@ -43,8 +43,10 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "grouptext.h"
+#include "pool.h"
 
 static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
+static pthread_mutex_t libOPCMutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void dumpText(mceTextReader_t *reader, FILE * fp) {
     mce_skip_attributes(reader);
@@ -73,6 +75,8 @@ bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 	if (*buf != NULL) {
 		return true;
 	}
+
+	pthread_mutex_lock(&libOPCMutex);
 
 	mceTextReader_t reader = {0};
 	opc_error_t err = {0};
@@ -117,11 +121,15 @@ bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 	opcContainerClose(container, OPC_CLOSE_NOW);
 
 	fclose(fm);
+
+	pthread_mutex_unlock(&libOPCMutex);
+
 	return true;
 
 }
 
-void processFile(struct kreq req) {
+static void * processFile(void *a) {
+	struct kreq * req = a;
 	size_t words = 0;
 	size_t characters = 0;
 	size_t sentences = 0;
@@ -132,11 +140,11 @@ void processFile(struct kreq req) {
 	char *b = NULL;
 	size_t size = 0;
 
-	if (!req.fields)
+	if (!req->fields)
 		goto endRequest;
 
 
-	loadAndReadWordFile(req.fields->val, req.fields->valsz, &buf);
+	loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
 
 	if (buf == NULL) {
 		goto endRequest;
@@ -144,7 +152,7 @@ void processFile(struct kreq req) {
 
 	char * tmp = NULL;
 	char * tmp2 = json_encode_string(buf);
-	khttp_write(&req, tmp, asprintf(&tmp, "{\"C\":%s,", tmp2));
+	khttp_write(req, tmp, asprintf(&tmp, "{\"C\":%s,", tmp2));
 	free(tmp);
 	free(tmp2);
 
@@ -235,19 +243,22 @@ void processFile(struct kreq req) {
 	double avg = (smogScore + fleschKincaid + ari + colemanLiau) / 4;
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 
-	khttp_write(&req, b,
+	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
 			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph));
 
  endRequest:
 	free(buf);
 	free(b);
-	khttp_free(&req);
+	khttp_free(req);
 }
 
 int main(void) {
 	struct kreq req = { 0 };
 	struct kfcgi *fcgi = NULL;
+
+	ThreadPoolNew();
+
 	opcInitLibrary();
 	if (KCGI_OK != khttp_fcgi_init(&fcgi, NULL, 0, NULL, 0, 0)) {
 		return 0;
@@ -256,9 +267,10 @@ int main(void) {
 		khttp_head(&req, kresps[KRESP_STATUS], "%s", khttps[KHTTP_200]);
 		khttp_head(&req, kresps[KRESP_CONTENT_TYPE], "%s", kmimetypes[KMIME_APP_JSON]);
 		khttp_body(&req);
-		processFile(req);
+		ThreadPoolAddTask(processFile, memmove(calloc(1, sizeof(struct kreq)), &req, sizeof(struct kreq)), true);
 	}
 	wait(NULL);
 	khttp_fcgi_child_free(fcgi);
 	opcFreeLibrary();
+	ThreadPoolCancel();
 }

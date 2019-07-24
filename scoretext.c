@@ -34,10 +34,12 @@
 #include <kcgi.h>
 #include <errno.h>
 #include "grouptext.h"
+#include "pool.h"
 
 static const char *jsonFmt = "{\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
 
-void processLine(struct kreq req) {
+static void * processLine(void *a) {
+	struct kreq * req = a;
 	size_t words = 0;
 	size_t characters = 0;
 	size_t sentences = 0;
@@ -46,10 +48,10 @@ void processLine(struct kreq req) {
 	size_t paragraph = 0;
 	char *b = NULL;
 
-	if (!req.fields) {
+	if (!req->fields) {
 		goto endRequest;
 	}
-	char * doubleNewline = strsep(&req.fields->val, "\r\n\r\n");
+	char * doubleNewline = strsep(&req->fields->val, "\r\n\r\n");
 	while (doubleNewline) {
 		if (*doubleNewline == '\0')
 			goto nextDouble;
@@ -124,7 +126,7 @@ void processLine(struct kreq req) {
 			line = strsep(&doubleNewline, "\r\n");
 		}
 		nextDouble:
-		doubleNewline = strsep(&req.fields->val, "\r\n\r\n");
+		doubleNewline = strsep(&req->fields->val, "\r\n\r\n");
 	}
 
 	double wordsOverSentences = ((double)words / (double)sentences);
@@ -135,26 +137,33 @@ void processLine(struct kreq req) {
 	double avg = (smogScore + fleschKincaid + ari + colemanLiau) / 4.0;
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 
-	khttp_write(&req, b,
+	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
 			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph));
  endRequest:
-	khttp_free(&req);
+	khttp_free(req);
 	free(b);
+	return NULL;
 }
 
 int main(void) {
-	struct kreq req = { 0 };
+	struct kreq req = {0};
 	struct kfcgi *fcgi = NULL;
+
+	ThreadPoolNew();
 
 	if (KCGI_OK != khttp_fcgi_init(&fcgi, NULL, 0, NULL, 0, 0)) {
 		return 0;
 	}
+
 	while (KCGI_OK == khttp_fcgi_parse(fcgi, &req)) {
 		khttp_head(&req, kresps[KRESP_STATUS], "%s", khttps[KHTTP_200]);
 		khttp_head(&req, kresps[KRESP_CONTENT_TYPE], "%s", kmimetypes[KMIME_APP_JSON]);
 		khttp_body(&req);
-		processLine(req);
+		ThreadPoolAddTask(processLine, memmove(calloc(1, sizeof(struct kreq)), &req, sizeof(struct kreq)), true);
 	}
+
+	ThreadPoolCancel();
+
 	khttp_fcgi_child_free(fcgi);
 }

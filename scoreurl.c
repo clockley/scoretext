@@ -40,6 +40,7 @@
 #include <sys/wait.h>
 #include "json.h"
 #include "grouptext.h"
+#include "pool.h"
 
 #define SCRAPER_PATH "/usr/local/bin/scoreurl.py"
 
@@ -97,8 +98,10 @@ int pipes[NUM_PIPES][2];
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
 
 static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
+static FILE * fp = NULL;
 
-void processLine(struct kreq req) {
+static void * processLine(void *a) {
+	struct kreq * req = a;
 	size_t words = 0;
 	size_t characters = 0;
 	size_t sentences = 0;
@@ -108,12 +111,15 @@ void processLine(struct kreq req) {
 	char *b = NULL;
 	char * buf = NULL;
 	char * tmp = NULL;
-	if (!req.fields) {
+	if (!req->fields) {
 		goto endRequest;
 	}
-	dprintf(PARENT_WRITE_FD, "%s\n", req.fields->val);
+
+	flockfile(fp);
+
+	dprintf(PARENT_WRITE_FD, "%s\n", req->fields->val);
+
     char *buffer = NULL;
-	FILE * fp = fdopen(PARENT_READ_FD, "r");
 	size_t s = 0;
 	FILE * fm = open_memstream(&buf, &s);
 	size_t x = 0;
@@ -124,9 +130,12 @@ void processLine(struct kreq req) {
 		}
 		fprintf(fm, "%s", buffer);
 	}
+
+	funlockfile(fp);
+
 	free(buffer);
 	char * tmp2 = json_encode_string(buf);
-	khttp_write(&req, tmp, asprintf(&tmp, "{\"C\":%s,", tmp2));
+	khttp_write(req, tmp, asprintf(&tmp, "{\"C\":%s,", tmp2));
 	free(tmp);
 	free(tmp2);
 	char * doubleNewline = strsep(&buf, "\n\n");
@@ -215,13 +224,14 @@ void processLine(struct kreq req) {
 	double avg = (smogScore + fleschKincaid + ari + colemanLiau) / 4;
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 
-	khttp_write(&req, b,
+	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
 			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph));
  endRequest:
-	khttp_free(&req);
+	khttp_free(req);
 	free(buf);
 	free(b);
+	return NULL;
 }
 
 int main(void) {
@@ -242,6 +252,10 @@ int main(void) {
         execv(argv[0], argv);
     }
 	
+	fp = fdopen(PARENT_READ_FD, "r");
+
+	ThreadPoolNew();
+
 	if (KCGI_OK != khttp_fcgi_init(&fcgi, NULL, 0, NULL, 0, 0)) {
 		return 0;
 	}
@@ -249,8 +263,9 @@ int main(void) {
 		khttp_head(&req, kresps[KRESP_STATUS], "%s", khttps[KHTTP_200]);
 		khttp_head(&req, kresps[KRESP_CONTENT_TYPE], "%s", kmimetypes[KMIME_APP_JSON]);
 		khttp_body(&req);
-		processLine(req);
+		ThreadPoolAddTask(processLine, memmove(calloc(1, sizeof(struct kreq)), &req, sizeof(struct kreq)), true);
 	}
 	wait(NULL);
 	khttp_fcgi_child_free(fcgi);
+	ThreadPoolCancel();
 }
