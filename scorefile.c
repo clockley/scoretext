@@ -268,7 +268,6 @@ int main(void) {
 		khttp_head(&req, kresps[KRESP_CONTENT_TYPE], "%s", kmimetypes[KMIME_APP_JSON]);
 		khttp_body(&req);
 		ThreadPoolAddTask(processFile, memcpy(calloc(1, sizeof(struct kreq)), &req, sizeof(struct kreq)), true);
-		khttp_free(&req);
 	}
 	wait(NULL);
 	khttp_fcgi_child_free(fcgi);
