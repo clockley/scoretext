@@ -77,7 +77,7 @@ bool loadAndTextWordFile(char *val, size_t valsz, char ** buf) {
 	}
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
     magic_load(magic, NULL);
-	if (strcmp(magic_buffer(magic, val, valsz), "text/html") == 0) {
+	if (strcmp(magic_buffer(magic, val, valsz), "text/plain") == 0) {
 		size_t size = 0;
 		FILE * fm = open_memstream(buf, &size);
 		char *tmp = NULL;
