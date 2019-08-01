@@ -41,6 +41,7 @@
 #include <opc/opc.h>
 #include "json.h"
 #include <unistd.h>
+#include <magic.h>
 #include <stdio.h>
 #include "grouptext.h"
 #include "pool.h"
@@ -67,6 +68,24 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
             dumpText(reader, fp);
         } mce_end_element(reader);
     } mce_end_children(reader);
+}
+
+bool loadAndTextWordFile(char *val, size_t valsz, char ** buf) {
+	magic_t magic = magic_open(MAGIC_MIME_TYPE);
+    magic_load(magic, NULL);
+	if (strcmp(magic_buffer(magic, val, valsz), "text/html") == 0) {
+		size_t size = 0;
+		FILE * fm = open_memstream(buf, &size);
+		for (char *p=val; *p; p++) if (*p != '\r') fputc(*p, fm);
+		fclose(fm);
+		magic_close(magic);
+	} else {
+		goto err;
+	}
+	return true;
+err:
+	magic_close(magic);
+	return false;
 }
 
 
@@ -143,7 +162,7 @@ static void * processFile(void *a) {
 	if (!req->fields)
 		goto endRequest;
 
-
+	loadAndTextWordFile(req->fields->val, req->fields->valsz, &buf);
 	loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
 
 	if (buf == NULL) {
