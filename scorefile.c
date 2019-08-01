@@ -76,7 +76,7 @@ bool loadAndReadTextFile(char *val, size_t valsz, char ** buf) {
 	if (*buf != NULL) {
 		return false;
 	}
-	magic_t magic = magic_open(MAGIC_MIME_TYPE|MAGIC_NO_CHECK_ENCODING);	
+	magic_t magic = magic_open(MAGIC_MIME_TYPE);
     magic_load(magic, NULL);
 	if (strstr(magic_buffer(magic, val, valsz), "text/plain") != NULL) {
 		if (strstr(val, "\r\n")) {
@@ -176,9 +176,8 @@ static void * processFile(void *a) {
 	if (!req->fields)
 		goto endRequest;
 
-	loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
 	loadAndReadTextFile(req->fields->val, req->fields->valsz, &buf);
-
+	loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
 
 	if (buf == NULL) {
 		goto endRequest;
