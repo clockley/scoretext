@@ -251,6 +251,7 @@ static void * processFile(void *a) {
 	free(buf);
 	free(b);
 	khttp_free(req);
+	buf = b = req = NULL;
 }
 
 int main(void) {
