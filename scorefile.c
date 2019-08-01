@@ -70,6 +70,14 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
     } mce_end_children(reader);
 }
 
+void removeChar(char *s, int c) { 
+    for (int i,j=i=0; s[i] != '\0'; i++) 
+       if (s[i] != c) 
+          s[j++] = s[i]; 
+      
+    s[j] = '\0'; 
+} 
+
 bool loadAndTextWordFile(char *val, size_t valsz, char ** buf) {
 	if (*buf != NULL) {
 		return false;
@@ -79,8 +87,11 @@ bool loadAndTextWordFile(char *val, size_t valsz, char ** buf) {
 	if (strcmp(magic_buffer(magic, val, valsz), "text/html") == 0) {
 		size_t size = 0;
 		FILE * fm = open_memstream(buf, &size);
-		for (char *p=val; *p; p++) if (*p != '\r') fputc(*p, fm);
+		char *tmp = NULL;
+		removeChar((tmp = strdup(val)), '\r');
+		fprintf(fm, "%s", tmp);
 		fclose(fm);
+		free(tmp);
 		magic_close(magic);
 	} else {
 		goto err;
