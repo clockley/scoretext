@@ -71,6 +71,9 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
 }
 
 bool loadAndTextWordFile(char *val, size_t valsz, char ** buf) {
+	if (buf != NULL) {
+		return false;
+	}
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
     magic_load(magic, NULL);
 	if (strcmp(magic_buffer(magic, val, valsz), "text/html") == 0) {
@@ -91,8 +94,8 @@ err:
 
 bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 
-	if (*buf != NULL) {
-		return true;
+	if (buf != NULL) {
+		return false;
 	}
 
 	pthread_mutex_lock(&libOPCMutex);
