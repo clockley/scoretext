@@ -48,6 +48,7 @@
 
 static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
 static pthread_mutex_t libOPCMutex = PTHREAD_MUTEX_INITIALIZER;
+static WindowsLineEndings = false;
 
 static void dumpText(mceTextReader_t *reader, FILE * fp) {
     mce_skip_attributes(reader);
@@ -78,10 +79,15 @@ bool loadAndReadTextFile(char *val, size_t valsz, char ** buf) {
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
     magic_load(magic, NULL);
 	if (strcmp(magic_buffer(magic, val, valsz), "text/plain") == 0) {
+		if (strstr(val, "\r\n")) {
+			WindowsLineEndings = true;
+		} else {
+			WindowsLineEndings = false;
+		}
 		size_t size = 0;
 		FILE * fm = open_memstream(buf, &size);
 		char *tmp = NULL;
-		for (char *p=val; *p; p++) if (*p != '\r') fputc(*p, fm);
+		fprintf(fm, "%s", val);
 		fclose(fm);
 		free(tmp);
 		magic_close(magic);
@@ -100,6 +106,8 @@ bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 	if (*buf != NULL) {
 		return false;
 	}
+
+	WindowsLineEndings = false;
 
 	pthread_mutex_lock(&libOPCMutex);
 
@@ -181,13 +189,13 @@ static void * processFile(void *a) {
 	free(tmp);
 	free(tmp2);
 
-	char * doubleNewline = strsep(&buf, "\n\n");
+	char * doubleNewline = strsep(&buf, WindowsLineEndings == true ? "\r\n\r\n" : "\n\n");
 	while (doubleNewline) {
 		if (*doubleNewline == '\0')
 			goto nextDouble;
 		else if (!isblank(*doubleNewline))
 			++paragraph;
-		char *line = strsep(&doubleNewline, "\n");
+		char *line = strsep(&doubleNewline, WindowsLineEndings == true ? "\r\n" : "\n");
 		while (line) {
 			if (isblank(*line))
 				++paragraph;
@@ -254,10 +262,10 @@ static void * processFile(void *a) {
 				dash = strsep(&line, "-");
 			}
 			nextLine:
-			line = strsep(&doubleNewline, "\n");
+			line = strsep(&doubleNewline, WindowsLineEndings == true ? "\r\n" : "\n");
 		}
 		nextDouble:
-		doubleNewline = strsep(&buf, "\n\n");
+		doubleNewline = strsep(&buf, WindowsLineEndings == true ? "\r\n\r\n" : "\n\n");
 	}
 
 	double wordsOverSentences = ((double)words / (double)sentences);
