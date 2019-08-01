@@ -70,8 +70,9 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
     } mce_end_children(reader);
 }
 
-void removeChar(char *s, int c) { 
-    for (int i,j=i=0; s[i] != '\0'; i++) 
+void removeChar(char *s, int c) {
+	int j = 0;
+    for (int i = 0; s[i] != '\0'; i++) 
        if (s[i] != c) 
           s[j++] = s[i]; 
       
