@@ -71,7 +71,7 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
 }
 
 bool loadAndTextWordFile(char *val, size_t valsz, char ** buf) {
-	if (buf != NULL) {
+	if (*buf != NULL) {
 		return false;
 	}
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
@@ -94,7 +94,7 @@ err:
 
 bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 
-	if (buf != NULL) {
+	if (*buf != NULL) {
 		return false;
 	}
 
