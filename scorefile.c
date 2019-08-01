@@ -71,7 +71,7 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
 }
 
 
-bool loadAndTextWordFile(char *val, size_t valsz, char ** buf) {
+bool loadAndReadTextFile(char *val, size_t valsz, char ** buf) {
 	if (*buf != NULL) {
 		return false;
 	}
@@ -168,7 +168,7 @@ static void * processFile(void *a) {
 	if (!req->fields)
 		goto endRequest;
 
-	loadAndTextWordFile(req->fields->val, req->fields->valsz, &buf);
+	loadAndReadTextFile(req->fields->val, req->fields->valsz, &buf);
 	loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
 
 	if (buf == NULL) {
