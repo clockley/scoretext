@@ -78,7 +78,7 @@ bool loadAndReadTextFile(char *val, size_t valsz, char ** buf) {
 	}
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
     magic_load(magic, NULL);
-	if (strcmp(magic_buffer(magic, val, valsz), "text/plain") == 0) {
+	if (strstr(magic_buffer(magic, val, valsz), "text/plain") != NULL) {
 		if (strstr(val, "\r\n")) {
 			WindowsLineEndings = true;
 		} else {
