@@ -48,7 +48,7 @@
 
 static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
 static pthread_mutex_t libOPCMutex = PTHREAD_MUTEX_INITIALIZER;
-static WindowsLineEndings = false;
+static __thread bool WindowsLineEndings = false;
 
 static void dumpText(mceTextReader_t *reader, FILE * fp) {
     mce_skip_attributes(reader);
@@ -73,12 +73,9 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
 
 
 bool loadAndReadTextFile(char *val, size_t valsz, char ** buf) {
-	if (*buf != NULL) {
-		return false;
-	}
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
     magic_load(magic, NULL);
-	if (strstr(magic_buffer(magic, val, valsz), "text/plain") != NULL) {
+	if (strcmp(magic_buffer(magic, val, valsz), "text/plain") == 0) {
 		if (strstr(val, "\r\n")) {
 			WindowsLineEndings = true;
 		} else {
@@ -102,11 +99,6 @@ err:
 
 
 bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
-
-	if (*buf != NULL) {
-		return false;
-	}
-
 	WindowsLineEndings = false;
 
 	pthread_mutex_lock(&libOPCMutex);
@@ -176,8 +168,10 @@ static void * processFile(void *a) {
 	if (!req->fields)
 		goto endRequest;
 
-	loadAndReadTextFile(req->fields->val, req->fields->valsz, &buf);
-	loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
+	if (buf == NULL)
+		loadAndReadTextFile(req->fields->val, req->fields->valsz, &buf);
+	if (buf == NULL)
+		loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
 
 	if (buf == NULL) {
 		goto endRequest;
