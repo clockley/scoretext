@@ -203,7 +203,6 @@ static void * processLine(void *a) {
 			fclose(fm);
 			break;
 		}
-		fprintf(fm, "%s", buffer);
 		fwrite(buffer, rsz, 1, fm);
 	}
 
