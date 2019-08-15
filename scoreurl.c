@@ -202,7 +202,7 @@ static void * processLine(void *a) {
 			fclose(fm);
 			break;
 		}
-		fwrite(buffer, x, 1 fm);
+		fwrite(buffer, x, 1, fm);
 	}
 
 	funlockfile(fp);
