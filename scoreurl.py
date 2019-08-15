@@ -25,6 +25,7 @@ import urllib.request
 import os
 from inscriptis import get_text
 from unidecode import unidecode
+import magic
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36 readabilitychecker.com',
@@ -84,9 +85,8 @@ while True:
         for s in algo1.splitlines():
             print(unidecode(s).strip())
     else:
-        if not algo2.strip():
-            for s in algo1.splitlines():
-                print(unidecode(s).strip())
+        if not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) == "text/plain":
+            print(unidecode(parsed_json["article"]["textContent"]))
         print(unidecode(algo2))
 
     algo1 = ""
