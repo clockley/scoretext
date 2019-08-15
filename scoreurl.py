@@ -82,7 +82,11 @@ while True:
         for s in algo1.splitlines():
             print(unidecode(s).strip())
     else:
-        print(unidecode(algo2))
+        if algo2.isspace():
+            for s in algo1.splitlines():
+                print(unidecode(s).strip())
+            else:
+                print(unidecode(algo2))
 
     algo1 = ""
     algo2 = ""
