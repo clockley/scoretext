@@ -35,8 +35,8 @@
 #include <errno.h>
 #include <limits.h>
 #include <fcntl.h>
+#include <opc/opc.h>
 #include <unistd.h>
-#include <stdbool.h>
 #include <sys/wait.h>
 #include "json.h"
 #include "grouptext.h"
@@ -99,6 +99,80 @@ int pipes[NUM_PIPES][2];
 
 static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
 static FILE * fp = NULL;
+static pthread_mutex_t libOPCMutex = PTHREAD_MUTEX_INITIALIZER;
+
+static void dumpText(mceTextReader_t *reader, FILE * fp) {
+    mce_skip_attributes(reader);
+    mce_start_children(reader) {
+        mce_start_element(reader, _X("http://schemas.openxmlformats.org/wordprocessingml/2006/main"), _X("t")) {
+            mce_skip_attributes(reader);
+            mce_start_children(reader) {
+                mce_start_text(reader) {
+					fputs_unlocked(xmlTextReaderConstValue(reader->reader), fp);
+                } mce_end_text(reader);
+            } mce_end_children(reader);
+        } mce_end_element(reader);
+        mce_start_element(reader, _X("http://schemas.openxmlformats.org/wordprocessingml/2006/main"), _X("p")) {
+            dumpText(reader, fp);
+			fputc_unlocked('\n', fp);
+        } mce_end_element(reader);
+        mce_start_element(reader, NULL, NULL) {
+            dumpText(reader, fp);
+        } mce_end_element(reader);
+    } mce_end_children(reader);
+}
+
+bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
+	pthread_mutex_lock(&libOPCMutex);
+
+	mceTextReader_t reader = {0};
+	opc_error_t err = {0};
+	size_t size = 0;
+	opcContainer * container = opcContainerOpenMem(val, valsz, OPC_OPEN_READ_ONLY, NULL);
+	if (!container)
+		return false;
+
+	opcRelation rel = opcRelationFind(container, OPC_PART_INVALID, NULL, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+
+	if (rel == OPC_RELATION_INVALID) {
+		opcContainerClose(container, OPC_CLOSE_NOW);
+		return false;
+	}
+
+	opcPart mainPart = opcRelationGetInternalTarget(container, OPC_PART_INVALID, rel);
+	if (mainPart != OPC_PART_INVALID) {
+		if (xmlStrcmp(opcPartGetType(container, mainPart), "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml") != 0) {
+			opcContainerClose(container, OPC_CLOSE_NOW);
+			return false;
+		}
+	}
+
+	if (mainPart == OPC_PART_INVALID) {
+		opcContainerClose(container, OPC_CLOSE_NOW);
+		return false;
+	}
+
+	err = opcXmlReaderOpen(container, &reader, "/word/document.xml", NULL, NULL, 0);
+	if (err != OPC_ERROR_NONE) {
+		opcContainerClose(container, OPC_CLOSE_NOW);
+		return false;
+	}
+	FILE * fm = open_memstream(buf, &size);
+
+    mce_start_document(&reader) {
+        mce_start_element(&reader, NULL, NULL) {
+            dumpText(&reader, fm);
+        } mce_end_element(&reader);
+    } mce_end_document(&reader);
+    mceTextReaderCleanup(&reader);
+	opcContainerClose(container, OPC_CLOSE_NOW);
+
+	fclose(fm);
+
+	pthread_mutex_unlock(&libOPCMutex);
+
+	return true;
+}
 
 static void * processLine(void *a) {
 	struct kreq * req = a;
@@ -134,6 +208,15 @@ static void * processLine(void *a) {
 	funlockfile(fp);
 
 	free(buffer);
+
+	char *wordFile = NULL;
+	loadAndReadWordFile(buf, s, &wordFile);
+
+	if (wordFile != NULL) {
+		free(buf);
+		buf = wordFile;
+	}
+
 	char * tmp2 = json_encode_string(buf);
 	khttp_write(req, tmp, asprintf(&tmp, "{\"C\":%s,", tmp2));
 	free(tmp);
