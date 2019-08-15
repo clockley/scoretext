@@ -104,7 +104,7 @@ while True:
     else:
         if not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) == "text/plain":
             print(unidecode(parsed_json["article"]["textContent"]))
-        else if not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) != "text/plain":
+        elif not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) != "text/plain":
             sys.stdout.buffer.write(rawbytes(parsed_json["article"]["textContent"]))
         else:
             print(unidecode(algo2))
