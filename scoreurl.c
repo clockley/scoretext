@@ -197,12 +197,14 @@ static void * processLine(void *a) {
 	size_t s = 0;
 	FILE * fm = open_memstream(&buf, &s);
 	size_t x = 0;
-	while (getline(&buffer, &x, fp) != -1) {
+	size_t rsz = 0;
+	while ((rsz = getline(&buffer, &x, fp)) != -1) {
 		if (memcmp("\0EOF\n", buffer, 5) == 0) {
 			fclose(fm);
 			break;
 		}
-		fwrite(buffer, x, 1, fm);
+		fprintf(fm, "%s", buffer);
+		fwrite(buffer, rsz, 1 fm);
 	}
 
 	funlockfile(fp);
