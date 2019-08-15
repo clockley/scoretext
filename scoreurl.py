@@ -78,14 +78,15 @@ while True:
             algo2 += paragraph.text+"\n\n"
 
 
-    if algo2.isspace():
-        for s in algo1.splitlines():
-            print(unidecode(s).strip())
+    #print(unidecode(algo1)+"algo2")
 
     if similar(algo1, algo2) >= .5:
         for s in algo1.splitlines():
             print(unidecode(s).strip())
     else:
+        if not algo2.strip():
+            for s in algo1.splitlines():
+                print(unidecode(s).strip())
         print(unidecode(algo2))
 
     algo1 = ""
