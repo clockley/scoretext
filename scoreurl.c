@@ -210,7 +210,7 @@ static void * processLine(void *a) {
 	free(buffer);
 
 	char *wordFile = NULL;
-	loadAndReadWordFile(buf, s, &wordFile);
+	loadAndReadWordFile(&buf, s, &wordFile);
 
 	if (wordFile != NULL) {
 		free(buf);
