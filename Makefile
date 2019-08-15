@@ -5,10 +5,10 @@ DEPS = grouptext.h grouptext.c json.c json.h pool.h
 all: textscore scorefile scoreurl
 
 textscore:
-	$(CC) -o textscore.fcgi scoretext.c json.c grouptext.c $(CFLAGS)
+	$(CC) -o textscore.fcgi scoretext.c $(DEPS) $(CFLAGS)
 
 scorefile:
-	$(CC) -o scorefile.fcgi scorefile.c json.c grouptext.c $(CFLAGS)
+	$(CC) -o scorefile.fcgi scorefile.c $(DEPS) $(CFLAGS)
 
 scoreurl:
-	$(CC) -o scoreurl.fcgi scoreurl.c json.c grouptext.c $(CFLAGS)
+	$(CC) -o scoreurl.fcgi scoreurl.c $(DEPS) $(CFLAGS)
