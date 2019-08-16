@@ -223,11 +223,11 @@ static void * processLine(void *a) {
 		char *wordFile = NULL;
 		loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
 		free(decodedFile);
-		if (wordFile != NULL) {
-			fprintf(stderr, "CP0");
+		//if (wordFile != NULL) {
+		//	fprintf(stderr, "CP0");
 			free(buf);
 			buf = wordFile;
-		}
+		//}
 	}
 
 	char * tmp2 = json_encode_string(buf);
