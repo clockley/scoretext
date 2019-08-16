@@ -217,7 +217,7 @@ static void * processLine(void *a) {
 	free(buffer);
 
 	if (b64) {
-		int decodedLen = 0;
+		size_t decodedLen = 0;
 		char * decodedFile = base64_decode(buf, s, &decodedLen);
 		if (decodedFile != NULL) {
 			char *wordFile = NULL;
