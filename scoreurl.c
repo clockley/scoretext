@@ -219,7 +219,7 @@ static void * processLine(void *a) {
 	if (b85) {
 		fprintf(stderr, "CP0");
 		int decodedLen = 0;
-		char * decodedFile = calloc(1, s), wordFile = NULL;
+		char * decodedFile = calloc(1, s);
 		decode_85(decodedFile, buf, s, &decodedLen);
 		loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
 		free(decodedFile);
