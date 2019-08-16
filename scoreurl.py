@@ -14,16 +14,20 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
+import io
 import json
 import sys
 from difflib import SequenceMatcher
+import re
 import justext
 import requests
 import urllib.request
+import os
 from inscriptis import get_text
 from unidecode import unidecode
 import magic
-import pybase64
+import struct
+import base64
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36 readabilitychecker.com',
@@ -76,6 +80,9 @@ while True:
         if not paragraph.is_boilerplate:
             algo2 += paragraph.text+"\n\n"
 
+
+    #print(unidecode(algo1)+"algo2")
+
     if similar(algo1, algo2) >= .5:
         for s in algo1.splitlines():
             print(unidecode(s).strip())
@@ -83,7 +90,7 @@ while True:
         if not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) == "text/plain":
             print(unidecode(parsed_json["article"]["textContent"]))
         elif not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) != "text/plain":
-            sys.stdout.buffer.write(pybase64.b64encode(article.content))
+            sys.stdout.buffer.write(base64.b64encode(article.content))
             print("\n\0B64")
             algo1 = ""
             algo2 = ""
@@ -94,3 +101,5 @@ while True:
     algo1 = ""
     algo2 = ""
     print("\n\0EOF")
+
+
