@@ -183,7 +183,7 @@ static void * processLine(void *a) {
 	size_t syllables = 0;
 	size_t pollysyllables = 0;
 	size_t paragraph = 0;
-	bool b85 = false;
+	bool b64 = false;
 	char *b = NULL;
 	char * buf = NULL;
 	char * tmp = NULL;
@@ -204,8 +204,8 @@ static void * processLine(void *a) {
 		if (memcmp("\0EOF\n", buffer, 5) == 0) {
 			fclose(fm);
 			break;
-		} else if (memcmp("\0B85\n", buffer, 5) == 0) {
-			b85 = true;
+		} else if (memcmp("\0B64\n", buffer, 5) == 0) {
+			b64 = true;
 			fclose(fm);
 			break;
 		}
@@ -216,7 +216,7 @@ static void * processLine(void *a) {
 
 	free(buffer);
 
-	if (b85) {
+	if (b64) {
 		int decodedLen = 0;
 		char * decodedFile = base64_decode(buf, s, &decodedLen);
 		if (decodedFile != NULL) {
@@ -224,7 +224,6 @@ static void * processLine(void *a) {
 			loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
 			free(decodedFile);
 			if (wordFile != NULL) {
-				fprintf(stderr, "CP0");
 				free(buf);
 				buf = wordFile;
 			}
