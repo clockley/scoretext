@@ -27,6 +27,7 @@ from inscriptis import get_text
 from unidecode import unidecode
 import magic
 import struct
+import base64
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36 readabilitychecker.com',
@@ -105,7 +106,11 @@ while True:
         if not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) == "text/plain":
             print(unidecode(parsed_json["article"]["textContent"]))
         elif not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) != "text/plain":
-            sys.stdout.buffer.write(rawbytes(parsed_json["article"]["textContent"]))
+            sys.stdout.buffer.write(base64.b85encode(rawbytes(parsed_json["article"]["textContent"])))
+            print("\n\0B85")
+            algo1 = ""
+            algo2 = ""
+            continue
         else:
             print(unidecode(algo2))
 

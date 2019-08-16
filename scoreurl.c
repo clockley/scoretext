@@ -41,6 +41,7 @@
 #include "json.h"
 #include "grouptext.h"
 #include "pool.h"
+#include "base85.h"
 
 #define SCRAPER_PATH "/usr/local/bin/scoreurl.py"
 
@@ -182,6 +183,7 @@ static void * processLine(void *a) {
 	size_t syllables = 0;
 	size_t pollysyllables = 0;
 	size_t paragraph = 0;
+	bool b85 = false;
 	char *b = NULL;
 	char * buf = NULL;
 	char * tmp = NULL;
@@ -202,6 +204,10 @@ static void * processLine(void *a) {
 		if (memcmp("\0EOF\n", buffer, 5) == 0) {
 			fclose(fm);
 			break;
+		} else if (memcmp("\0B85\n", buffer, 5) == 0) {
+			b85 = true;
+			fclose(fm);
+			break;
 		}
 		fwrite(buffer, rsz, 1, fm);
 	}
@@ -210,13 +216,17 @@ static void * processLine(void *a) {
 
 	free(buffer);
 
-	char *wordFile = NULL;
-	loadAndReadWordFile(buf, s, &wordFile);
-
-	if (wordFile != NULL) {
-		fprintf(stderr, "CP0");
-		free(buf);
-		buf = wordFile;
+	if (b85) {
+		char * decodedFile = calloc(1, s);
+		decode_85(decodedFile, buf, s);
+		char *wordFile = NULL;
+		loadAndReadWordFile(decodedFile, s, &wordFile);
+		free(decodedFile);
+		if (wordFile != NULL) {
+			fprintf(stderr, "CP0");
+			free(buf);
+			buf = wordFile;
+		}
 	}
 
 	char * tmp2 = json_encode_string(buf);
