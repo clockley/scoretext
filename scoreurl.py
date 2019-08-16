@@ -33,22 +33,6 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36 readabilitychecker.com',
 }
 
-#https://stackoverflow.com/questions/42795042/how-to-cast-a-string-to-bytes-without-encoding
-def rawbytes(s):
-    """Convert a string to raw bytes without encoding"""
-    outlist = []
-    for cp in s:
-        num = ord(cp)
-        if num < 255:
-            outlist.append(struct.pack('B', num))
-        elif num < 65535:
-            outlist.append(struct.pack('>H', num))
-        else:
-            b = (num & 0xFF0000) >> 16
-            H = num & 0xFFFF
-            outlist.append(struct.pack('>bH', b, H))
-    return b''.join(outlist)
-
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
@@ -106,7 +90,7 @@ while True:
         if not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) == "text/plain":
             print(unidecode(parsed_json["article"]["textContent"]))
         elif not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) != "text/plain":
-            sys.stdout.buffer.write(base64.b85encode(rawbytes(parsed_json["article"]["textContent"])))
+            sys.stdout.buffer.write(base64.b85encode(article.content))
             print("\n\0B85")
             algo1 = ""
             algo2 = ""
