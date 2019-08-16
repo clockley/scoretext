@@ -217,17 +217,17 @@ static void * processLine(void *a) {
 	free(buffer);
 
 	if (b85) {
+		fprintf(stderr, "CP0");
 		int decodedLen = 0;
 		char * decodedFile = calloc(1, s);
 		decode_85(decodedFile, buf, s, &decodedLen);
-		char *wordFile = NULL;
 		loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
 		free(decodedFile);
-		//if (wordFile != NULL) {
-		//	fprintf(stderr, "CP0");
+		if (wordFile != NULL) {
+			fprintf(stderr, "CP1");
 			free(buf);
 			buf = wordFile;
-		//}
+		}
 	}
 
 	char * tmp2 = json_encode_string(buf);
