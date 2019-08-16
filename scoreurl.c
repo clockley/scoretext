@@ -41,7 +41,7 @@
 #include "json.h"
 #include "grouptext.h"
 #include "pool.h"
-#include "base85.h"
+#include "base64.h"
 
 #define SCRAPER_PATH "/usr/local/bin/scoreurl.py"
 
@@ -218,15 +218,16 @@ static void * processLine(void *a) {
 
 	if (b85) {
 		int decodedLen = 0;
-		char * decodedFile = calloc(1, s);
-		decode_85(decodedFile, buf, s, &decodedLen);
-		char *wordFile = NULL;
-		loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
-		free(decodedFile);
-		if (wordFile != NULL) {
-			fprintf(stderr, "CP0");
-			free(buf);
-			buf = wordFile;
+		char * decodedFile = base64_decode(buf, s, &decodedLen);
+		if (decodedFile != NULL) {
+			char *wordFile = NULL;
+			loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
+			free(decodedFile);
+			if (wordFile != NULL) {
+				fprintf(stderr, "CP0");
+				free(buf);
+				buf = wordFile;
+			}
 		}
 	}
 
