@@ -25,7 +25,7 @@ static void prep_base85(void)
 	}
 }
 
-int decode_85(char *dst, const char *buffer, int len)
+int decode_85(char *dst, const char *buffer, int len, int * outLen)
 {
 	prep_base85();
 
@@ -55,6 +55,7 @@ int decode_85(char *dst, const char *buffer, int len)
 		do {
 			acc = (acc << 8) | (acc >> 24);
 			*dst++ = acc;
+			*outLen += 1;
 		} while (--cnt);
 	}
 
