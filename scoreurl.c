@@ -219,7 +219,8 @@ static void * processLine(void *a) {
 	if (b64) {
 		b64 = false;
 		size_t decodedLen = 0;
-		char * decodedFile = base64_decode(buf, s, &decodedLen);
+		char * decodedFile = malloc((decodedLen = chromium_base64_decode_len(s)));
+		decodedLen = chromium_base64_decode(decodedFile, buf, decodedLen);
 		if (decodedFile != NULL) {
 			char *wordFile = NULL;
 			loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
