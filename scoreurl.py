@@ -79,9 +79,9 @@ while True:
         for s in algo1.splitlines():
             print(unidecode(s).strip())
     else:
-        if not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) == "text/plain":
+        if not algo2.strip() and magic.from_buffer(article.content, mime=True) == "text/plain":
             print(unidecode(parsed_json["article"]["textContent"]))
-        elif not algo2.strip() and magic.from_buffer(parsed_json["article"]["textContent"], mime=True) != "text/plain":
+        elif not algo2.strip() and magic.from_buffer(article.content, mime=True) != "text/plain":
             sys.stdout.buffer.write(pybase64.b64encode(article.content))
             print("\n\0B64")
             algo1 = ""
