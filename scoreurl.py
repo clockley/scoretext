@@ -19,7 +19,6 @@ import sys
 from difflib import SequenceMatcher
 import justext
 import requests
-import urllib.request
 from inscriptis import get_text
 from unidecode import unidecode
 import magic
