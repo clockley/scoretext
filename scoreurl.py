@@ -22,7 +22,7 @@ import requests
 from inscriptis import get_text
 from unidecode import unidecode
 import magic
-from subprocess import Popen, PIPE, STDOUT
+import pybase64
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36 readabilitychecker.com',
@@ -82,9 +82,8 @@ while True:
         if not algo2.strip() and magic.from_buffer(article.content, mime=True) == "text/plain":
             print(unidecode(parsed_json["article"]["textContent"]))
         elif not algo2.strip() and magic.from_buffer(article.content, mime=True) != "text/plain":
-            p = Popen(['base64'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-            print(p.communicate(input=article.content)[0].decode())
-            print("\0B64")
+            sys.stdout.buffer.write(pybase64.b64encode(article.content))
+            print("\n\0B64")
             algo1 = ""
             algo2 = ""
             continue
