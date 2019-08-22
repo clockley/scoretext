@@ -9,4 +9,4 @@ Install like any other FastCGI script.
 
 # Note
 scoreurl.fcgi does not read urls passed to it, use the included web scraper.
-The included web scraper uses anyread-api.js by [maludecks](https://github.com/maludecks). I've forked this repo you can find it [here](https://github.com/clockley/anyread-api.js)
+The included web scraper uses anyread-api.js by [maludecks](https://github.com/maludecks). I've forked this repo with a minor change you can find it [here](https://github.com/clockley/anyread-api.js)
