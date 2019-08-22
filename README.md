@@ -1,8 +1,6 @@
 # scoretext
 # How to build
-First install the kcgi and libopc library and devel packages you can find kcgi and libopc on github https://github.com/kristapsdz/kcgi
-
-https://github.com/freuter/libopc
+First install the kcgi and libopc library and devel packages you can find [kcgi](ttps://github.com/kristapsdz/kcgi) and [libopc](https://github.com/freuter/libopc)
 
 After building and installing kcgi compile the project with make
 
