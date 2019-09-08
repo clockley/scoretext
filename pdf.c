@@ -68,6 +68,6 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
 
     curl_easy_cleanup(curl);
 
-    buf = chunk.memory;
+    ret = &chunk.memory;
     return true;
 }
