@@ -23,26 +23,12 @@
 static size_t readResponse(void *contents, size_t size, size_t nmemb,
 			   void *userp)
 {
-	size_t realsize = size * nmemb;
-	MemoryStruct *mem = (MemoryStruct *) userp;
-
-	char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-	if (ptr == NULL) {
-        abort();
-	}
-
-	mem->memory = ptr;
-	memcpy(&(mem->memory[mem->size]), contents, realsize);
-	mem->size += realsize;
-	mem->memory[mem->size] = 0;
-
-	return realsize;
+    return fprintf((FILE *) userp, "%s", contents);
 }
 
 bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
     struct curl_httppost *formHead = NULL;
 	struct curl_httppost *formTail = NULL;
-    MemoryStruct chunk = {.memory = malloc(1), .size = 0};
 
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
 
@@ -62,13 +48,13 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, readResponse);
 	curl_easy_setopt(curl, CURLOPT_URL, DOCCONVERSIONURL);
 	curl_easy_setopt(curl, CURLOPT_HTTPPOST, formHead);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+    size_t size = 0;
+    FILE * fm = open_memstream(ret, &size);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)fm);
 
 	curl_easy_perform(curl);
 
     curl_easy_cleanup(curl);
-
-    ret = &chunk.memory;
 
     return true;
 }
