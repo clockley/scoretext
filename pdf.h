@@ -29,5 +29,11 @@
 
 #define DOCCONVERSIONURL "http://localhost:4567/uploadPDF"
 
+typedef struct MemoryStruct {
+	char *memory;
+	size_t size;
+} MemoryStruct;
+
+
 bool loadAndReadPDFFile(char *, uint32_t, char **);
 #endif
