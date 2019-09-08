@@ -41,6 +41,7 @@
 #include "json.h"
 #include "grouptext.h"
 #include "pool.h"
+#include "pdf.h"
 #include "base64.h"
 
 #define SCRAPER_PATH "/usr/local/bin/scoreurl.py"

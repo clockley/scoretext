@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include "grouptext.h"
 #include "pool.h"
+#include "pdf.h"
 
 static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
 static pthread_mutex_t libOPCMutex = PTHREAD_MUTEX_INITIALIZER;

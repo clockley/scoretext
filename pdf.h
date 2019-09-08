@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef PDF_H
+#define PDF_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +26,6 @@
 #include <curl/curl.h>
 #include "grouptext.h"
 #include <magic.h>
-#include "pool.h"
 
 #define DOCCONVERSIONURL "http://localhost:4567/uploadPDF"
 
@@ -37,3 +36,4 @@ typedef struct MemoryStruct {
 
 
 bool loadAndReadPDFFile(char *, uint32_t, char **);
+#endif
