@@ -55,6 +55,7 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
 	curl_easy_perform(curl);
 
     curl_easy_cleanup(curl);
+    fclose(fm);
 
     return true;
 }
