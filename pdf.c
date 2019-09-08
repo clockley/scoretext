@@ -23,7 +23,8 @@
 static size_t readResponse(void *contents, size_t size, size_t nmemb,
 			   void *userp)
 {
-    return fprintf((FILE *) userp, "%s", contents);
+    fprintf((FILE *) userp, "%s", contents);
+    return size*nmemb;
 }
 
 bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
