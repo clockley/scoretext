@@ -123,7 +123,7 @@ static void dumpText(mceTextReader_t *reader, FILE * fp) {
     } mce_end_children(reader);
 }
 
-bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
+bool loadAndReadfile(char *val, size_t valsz, char ** buf) {
 	pthread_mutex_lock(&libOPCMutex);
 
 	mceTextReader_t reader = {0};
@@ -221,12 +221,15 @@ static void * processLine(void *a) {
 		size_t decodedLen = 0;
 		char * decodedFile = base64_decode(buf, s, &decodedLen);
 		if (decodedFile != NULL) {
-			char *wordFile = NULL;
-			loadAndReadWordFile(decodedFile, decodedLen, &wordFile);
+			char *file = NULL;
+			loadAndReadfile(decodedFile, decodedLen, &file);
+			if (file == NULL) {
+				loadAndReadPDFFile(decodedFile, decodedLen, &file);
+			}
 			free(decodedFile);
-			if (wordFile != NULL) {
+			if (file != NULL) {
 				free(buf);
-				buf = wordFile;
+				buf = file;
 			}
 		}
 	}

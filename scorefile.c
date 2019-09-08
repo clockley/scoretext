@@ -87,7 +87,7 @@ bool loadAndReadTextFile(char *val, size_t valsz, char ** buf) {
 		fprintf(fm, "%s", val);
 		fclose(fm);
 		free(tmp);
-		magic_close(magic);
+		
 	} else {
 		goto err;
 	}
@@ -172,6 +172,8 @@ static void * processFile(void *a) {
 		loadAndReadTextFile(req->fields->val, req->fields->valsz, &buf);
 	if (buf == NULL)
 		loadAndReadWordFile(req->fields->val, req->fields->valsz, &buf);
+	if (buf == NULL)
+		loadAndReadPDFFile(req->fields->val, req->fields->valsz, &buf);
 
 	if (buf == NULL) {
 		goto endRequest;

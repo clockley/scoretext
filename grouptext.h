@@ -12,6 +12,7 @@ struct time {
 	int h, m, s;
 };
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
+#define var __auto_type
 bool isVowel(int c);
 struct time calcReadingTime(size_t words);
 struct time calcSpeakingTime(size_t words);
