@@ -41,7 +41,7 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
 
 	curl_formadd(&formHead, &formTail, CURLFORM_PTRNAME, "uploaded_file",
 		     CURLFORM_PTRCONTENTS, buf,
-		     CURLFORM_CONTENTSLENGTH, len);
+		     CURLFORM_CONTENTSLENGTH, len, CURLFORM_END);
 
 	var curl = curl_easy_init();
 
