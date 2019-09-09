@@ -32,8 +32,7 @@ static size_t readResponse(void *contents, size_t size, size_t nmemb,
 	}
 
 	mem->memory = ptr;
-	//memmove(&(mem->memory[mem->size]), contents, realsize);
-    snprintf(&(mem->memory[mem->size]), realsize, "%s", contents);
+	memmove(&(mem->memory[mem->size]), contents, realsize);
 	mem->size += realsize;
 	mem->memory[mem->size] = 0;
 
@@ -43,7 +42,8 @@ static size_t readResponse(void *contents, size_t size, size_t nmemb,
 bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
     struct curl_httppost *formHead = NULL;
 	struct curl_httppost *formTail = NULL;
-    MemoryStruct chunk = {.memory = malloc(1), .size = 0};
+    __thread static MemoryStruct chunk = {.size = 0 };
+    chunk.memory = malloc(1);
 
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
 
@@ -69,6 +69,6 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
 
     curl_easy_cleanup(curl);
 
-    *ret = chunk.memory;
+    ret = &chunk.memory;
     return true;
 }
