@@ -35,5 +35,5 @@ typedef struct MemoryStruct {
 } MemoryStruct;
 
 
-bool loadAndReadPDFFile(char *, uint32_t, char **);
+bool loadAndReadPDFFile(char *, size_t, char **);
 #endif

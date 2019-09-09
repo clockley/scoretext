@@ -30,7 +30,7 @@ static size_t readResponse(void *contents, size_t size, size_t nmemb,
   return retcode;
 }
 
-bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
+bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
     struct curl_httppost *formHead = NULL;
 	struct curl_httppost *formTail = NULL;
 
@@ -43,11 +43,11 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
         return false;
     }
 
+    var curl = curl_easy_init();
+
 	curl_formadd(&formHead, &formTail, CURLFORM_PTRNAME, "uploaded_file",
 		     CURLFORM_PTRCONTENTS, buf,
-		     CURLFORM_CONTENTSLENGTH, len, CURLFORM_END);
-
-	var curl = curl_easy_init();
+		     CURLFORM_CONTENTLEN, len, CURLFORM_END);
 
 	size_t sz = 0;
 	var f = open_memstream(ret, &sz);
@@ -60,6 +60,8 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
 	curl_easy_perform(curl);
 
     curl_easy_cleanup(curl);
+
+    curl_formfree(formHead);
 
 	fclose(f);
 
