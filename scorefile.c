@@ -288,6 +288,8 @@ int main(void) {
 	struct kreq req = { 0 };
 	struct kfcgi *fcgi = NULL;
 
+	curl_global_init(CURL_GLOBAL_ALL);
+
 	ThreadPoolNew();
 
 	opcInitLibrary();
