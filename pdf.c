@@ -32,7 +32,8 @@ static size_t readResponse(void *contents, size_t size, size_t nmemb,
 	}
 
 	mem->memory = ptr;
-	memcpy(&(mem->memory[mem->size]), contents, realsize);
+	//memmove(&(mem->memory[mem->size]), contents, realsize);
+    snprintf(&(mem->memory[mem->size]), realsize, "%s", contents);
 	mem->size += realsize;
 	mem->memory[mem->size] = 0;
 
