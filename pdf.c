@@ -33,9 +33,8 @@ static size_t readResponse(void *contents, size_t size, size_t nmemb,
 bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
     struct curl_httppost *formHead = NULL;
 	struct curl_httppost *formTail = NULL;
-    MemoryStruct chunk = {.size = 0, .memory = malloc(1)};
 
-	var magic = magic_open(MAGIC_MIME_TYPE);
+    var magic = magic_open(MAGIC_MIME_TYPE);
 
     magic_load(magic, NULL);
 
@@ -56,7 +55,7 @@ bool loadAndReadPDFFile(char * buf, uint32_t len, char ** ret) {
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, readResponse);
 	curl_easy_setopt(curl, CURLOPT_URL, DOCCONVERSIONURL);
 	curl_easy_setopt(curl, CURLOPT_HTTPPOST, formHead);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)f);
 
 	curl_easy_perform(curl);
 
