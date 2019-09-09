@@ -45,9 +45,9 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
 
     var curl = curl_easy_init();
 
-	curl_formadd(&formHead, &formTail, CURLFORM_PTRNAME, "uploaded_file",
+	curl_formadd(&formHead, &formTail, CURLFORM_COPYNAME, "uploaded_file",
 		     CURLFORM_PTRCONTENTS, buf,
-		     CURLFORM_CONTENTLEN, len, CURLFORM_END);
+		     CURLFORM_CONTENTSLENGTH, len, CURLFORM_END);
 
 	size_t sz = 0;
 	var f = open_memstream(ret, &sz);
