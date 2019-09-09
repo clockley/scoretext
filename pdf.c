@@ -43,7 +43,13 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
         return false;
     }
 
-    var curl = curl_easy_init();
+    static __thread bool once;
+    CURL * curl;
+
+    if (once == false) {
+        curl = curl_easy_init();
+        once = true;
+    }
 
 	curl_formadd(&formHead, &formTail, CURLFORM_COPYNAME, "uploaded_file",
 		     CURLFORM_PTRCONTENTS, buf,
@@ -60,7 +66,7 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
 
 	curl_easy_perform(curl);
 
-    curl_easy_cleanup(curl);
+    curl_easy_reset(curl);
 
     curl_formfree(formHead);
 
