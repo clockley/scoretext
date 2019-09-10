@@ -43,13 +43,7 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
         return false;
     }
 
-    static __thread bool once;
-    CURL * curl;
-
-    if (once == false) {
-        curl = curl_easy_init();
-        once = true;
-    }
+    var curl = curl_easy_init();
 
 	curl_formadd(&formHead, &formTail, CURLFORM_COPYNAME, "uploaded_file",
 		     CURLFORM_PTRCONTENTS, buf,
@@ -60,9 +54,9 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
 
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, readResponse);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)f);
 	curl_easy_setopt(curl, CURLOPT_URL, DOCCONVERSIONURL);
 	curl_easy_setopt(curl, CURLOPT_HTTPPOST, formHead);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)f);
 
 	curl_easy_perform(curl);
 

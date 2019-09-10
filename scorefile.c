@@ -108,13 +108,17 @@ bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 	opc_error_t err = {0};
 	size_t size = 0;
 	opcContainer * container = opcContainerOpenMem(val, valsz, OPC_OPEN_READ_ONLY, NULL);
-	if (!container)
+	if (!container) {
+		opcContainerClose(container, OPC_CLOSE_NOW);
+		pthread_mutex_unlock(&libOPCMutex);
 		return false;
+	}
 
 	opcRelation rel = opcRelationFind(container, OPC_PART_INVALID, NULL, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
 
 	if (rel == OPC_RELATION_INVALID) {
 		opcContainerClose(container, OPC_CLOSE_NOW);
+		pthread_mutex_unlock(&libOPCMutex);
 		return false;
 	}
 
@@ -122,20 +126,24 @@ bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 	if (mainPart != OPC_PART_INVALID) {
 		if (xmlStrcmp(opcPartGetType(container, mainPart), "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml") != 0) {
 			opcContainerClose(container, OPC_CLOSE_NOW);
+			pthread_mutex_unlock(&libOPCMutex);
 			return false;
 		}
 	}
 
 	if (mainPart == OPC_PART_INVALID) {
 		opcContainerClose(container, OPC_CLOSE_NOW);
+		pthread_mutex_unlock(&libOPCMutex);
 		return false;
 	}
 
 	err = opcXmlReaderOpen(container, &reader, "/word/document.xml", NULL, NULL, 0);
 	if (err != OPC_ERROR_NONE) {
 		opcContainerClose(container, OPC_CLOSE_NOW);
+		pthread_mutex_unlock(&libOPCMutex);
 		return false;
 	}
+
 	FILE * fm = open_memstream(buf, &size);
 
     mce_start_document(&reader) {
@@ -155,6 +163,7 @@ bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 }
 
 static void * processFile(void *a) {
+
 	struct kreq * req = a;
 	size_t words = 0;
 	size_t characters = 0;
