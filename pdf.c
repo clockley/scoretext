@@ -23,11 +23,7 @@
 static size_t readResponse(void *contents, size_t size, size_t nmemb,
 			   void *userp)
 {
-  var writehere = (FILE *)userp;
-  var retcode = fwrite(contents, size, nmemb, writehere);
-  var nwrite = (curl_off_t)retcode;
-
-  return retcode;
+    return fwrite(contents, size, nmemb, userp);
 }
 
 bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
@@ -60,7 +56,7 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
 
 	curl_easy_perform(curl);
 
-    curl_easy_reset(curl);
+    curl_easy_cleanup(curl);
 
     curl_formfree(formHead);
 
