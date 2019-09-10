@@ -53,6 +53,8 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)f);
 	curl_easy_setopt(curl, CURLOPT_URL, DOCCONVERSIONURL);
 	curl_easy_setopt(curl, CURLOPT_HTTPPOST, formHead);
+    long rcode = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &rcode);
 
 	curl_easy_perform(curl);
 
@@ -61,6 +63,11 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
     curl_formfree(formHead);
 
 	fclose(f);
+
+    if (rcode != 200) {
+        free(*ret);
+        *ret = NULL;
+    }
 
     return true;
 }
