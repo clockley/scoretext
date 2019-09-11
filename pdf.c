@@ -39,24 +39,28 @@ bool loadAndReadPDFFile(char * buf, size_t len, char ** ret) {
         return false;
     }
 
-    var curl = curl_easy_init();
+    static __thread CURL * curl;
 
-	curl_formadd(&formHead, &formTail, CURLFORM_COPYNAME, "uploaded_file",
-		     CURLFORM_PTRCONTENTS, buf,
-		     CURLFORM_CONTENTSLENGTH, len, CURLFORM_END);
+    if (curl == NULL) {
+        curl = curl_easy_init();
+    }
+
+	curl_formadd(&formHead, &formTail, CURLFORM_PTRNAME, "uploaded_file",
+		    CURLFORM_PTRCONTENTS, buf,
+		    CURLFORM_CONTENTSLENGTH, len, CURLFORM_END);
 
 	size_t sz = 0;
 	var f = open_memstream(ret, &sz);
 
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, readResponse);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)f);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, f);
 	curl_easy_setopt(curl, CURLOPT_URL, DOCCONVERSIONURL);
 	curl_easy_setopt(curl, CURLOPT_HTTPPOST, formHead);
 
 	curl_easy_perform(curl);
 
-    curl_easy_cleanup(curl);
+    curl_easy_reset(curl);
 
     curl_formfree(formHead);
 
