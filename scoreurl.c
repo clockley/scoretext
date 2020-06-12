@@ -283,7 +283,6 @@ static void * processLine(void *a) {
 						}
 						goto nextWord;
 					}
-					ssize_t c = 0;
 
 					if (isNewSentence(word, len)) {
 						++sentences;
@@ -291,7 +290,8 @@ static void * processLine(void *a) {
 					len = trim(word);
 					if (len == 0)
 						goto nextWord;
-					c = countSyllables(word, len);
+
+					ssize_t c = countSyllables(word, len);
 
 					if (c >= 3) {
 						++pollysyllables;
@@ -312,7 +312,7 @@ static void * processLine(void *a) {
 		nextDouble:
 		doubleNewline = strsep(&buf, "\n\n");
 	}
-	
+
 	double ari, fleschKincaid, smogScore, colemanLiau, avg;
 	calcScores(words, sentences, characters, syllables, pollysyllables, &avg, &ari, &fleschKincaid, &smogScore, &colemanLiau);
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);

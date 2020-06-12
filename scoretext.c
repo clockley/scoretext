@@ -87,15 +87,13 @@ static void * processLine(void *a) {
 						}
 						goto nextWord;
 					}
-					ssize_t c = 0;
-
 					if (isNewSentence(word, len)) {
 						++sentences;
 					}
 					len = trim(word);
 					if (len == 0)
 						goto nextWord;
-					c = countSyllables(word, len);
+					ssize_t c = countSyllables(word, len);
 
 					if (c >= 3) {
 						++pollysyllables;
