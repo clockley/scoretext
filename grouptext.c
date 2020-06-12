@@ -25,13 +25,13 @@ const char *vowelDigraphs[] = {
 };
 
 
-void calcScores(size_t words, size_t sentences, size_t characters, size_t syllables,  size_t pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
-	var wordsOverSentences = ((double)words / (double)sentences);
-	*ari = (4.71 * ((double)characters / (double)words)) + ((.5 * wordsOverSentences) - 21.43);
-	*fleschKincaid = .39 * wordsOverSentences + (11.8 * ((double)syllables / (double)words) - 15.59);
-	*smogScore = ((double)1.0430 * (double)sqrt(pollysyllables * (double)30.0 / (double)sentences)) + 3.1291;
-	*colemanLiau = .0588 * ((((double)characters / (double)words)) * 100.0) - (.269 * (((double)sentences / (double)words)) * 100.0) - 15.8;
-	*avg = (*smogScore + *fleschKincaid + *ari + *colemanLiau) / 4.0;
+void calcScores(size_t words, size_t sentences, size_t characters, size_t syllables,  size_t pollysyllables, _Decimal64 * avg, _Decimal64 *ari, _Decimal64 *fleschKincaid, _Decimal64 *smogScore, _Decimal64 *colemanLiau) {
+	var wordsOverSentences = ((_Decimal64)words / (_Decimal64)sentences);
+	*ari = (4.71DD * ((_Decimal64)characters / (_Decimal64)words)) + ((.5DD * wordsOverSentences) - 21.43DD);
+	*fleschKincaid = .39DD * wordsOverSentences + (11.8DD * ((_Decimal64)syllables / (_Decimal64)words) - 15.59DD);
+	*smogScore = ((_Decimal64)1.0430DD * (_Decimal64)sqrt(pollysyllables * (_Decimal64)30.0DD / (_Decimal64)sentences)) + 3.1291DD;
+	*colemanLiau = .0588DD * ((((_Decimal64)characters / (_Decimal64)words)) * 100.0DD) - (.269DD * (((_Decimal64)sentences / (_Decimal64)words)) * 100.0DD) - 15.8DD;
+	*avg = (*smogScore + *fleschKincaid + *ari + *colemanLiau) / 4.0DD;
 }
 
 bool isVowel(int c) {

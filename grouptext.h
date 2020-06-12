@@ -23,5 +23,5 @@ ssize_t countSyllables(char *w, size_t s);
 size_t trim(char *szWrite);
 bool isWebsite(const void *, size_t);
 bool isNewSentence(const void *, size_t);
-void calcScores(size_t words, size_t sentences, size_t characters, size_t syllables,  size_t pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau);
+void calcScores(size_t words, size_t sentences, size_t characters, size_t syllables,  size_t pollysyllables, _Decimal64 * avg, _Decimal64 *ari, _Decimal64 *fleschKincaid, _Decimal64 *smogScore, _Decimal64 * colemanLiau);
 #endif
