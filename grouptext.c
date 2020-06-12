@@ -24,6 +24,16 @@ const char *vowelDigraphs[] = {
 	"ion", "ial"
 };
 
+
+void calcScores(size_t words, size_t sentences, size_t characters, size_t syllables,  size_t pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
+	var wordsOverSentences = ((double)words / (double)sentences);
+	*ari = (4.71 * ((double)characters / (double)words)) + ((.5 * wordsOverSentences) - 21.43);
+	*fleschKincaid = .39 * wordsOverSentences + (11.8 * ((double)syllables / (double)words) - 15.59);
+	*smogScore = ((double)1.0430 * (double)sqrt(pollysyllables * (double)30.0 / (double)sentences)) + 3.1291;
+	*colemanLiau = .0588 * ((((double)characters / (double)words)) * 100.0) - (.269 * (((double)sentences / (double)words)) * 100.0) - 15.8;
+	*avg = (*smogScore + *fleschKincaid + *ari + *colemanLiau) / 4.0;
+}
+
 bool isVowel(int c) {
 	c = tolower(c);
 	return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
