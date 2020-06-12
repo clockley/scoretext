@@ -21,4 +21,6 @@ bool charEqual(char a, char b);
 bool charEqualByRef(char *a, char *b);
 ssize_t countSyllables(char *w, size_t s);
 size_t trim(char *szWrite);
+bool isWebsite(const void *, size_t);
+bool isNewSentence(const void *, size_t);
 #endif

@@ -29,6 +29,17 @@ bool isVowel(int c) {
 	return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
 }
 
+bool isWebsite(const void *word, size_t len) {
+	return memmem(word, len, "://", 3)
+	|| memmem(word, len, "www", 3)
+	|| memmem(word, len, ".com", 4)
+	|| (*(char*)word == '&' && *(char*)(word + 1) == '\0');
+}
+
+bool isNewSentence(const void *word, size_t len) {
+	return memmem(word, len, "?", 1) || memmem(word, len, "!", 1) || memmem(word, len, ".", 1);
+}
+
 struct time calcReadingTime(size_t words) {
 	register double sec = ((double)words / 225.0) * 60.0;
 	return (struct time) {

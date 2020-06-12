@@ -271,39 +271,27 @@ static void * processLine(void *a) {
 				while (word) {
 					size_t len = strlen(word);
 
-					if (memmem(word, len, "://", 3)
-						|| memmem(word, len, "www", 3)
-						|| memmem(word, len, ".com", 4)
-						|| (*word == '&' && *(word + 1) == '\0')) {
+					if (isWebsite(word, len)) {
 						++words;
 						++syllables;
 						++characters;
 						goto nextWord;
 					}
 					if (isdigit(*word) || *(word) == '\0') {
-						if (memmem(word, len, "?", 1)
-							|| memmem(word, len, "!", 1)
-							|| memmem(word, len, ".", 1)) {
+						if (isNewSentence(word, len)) {
 							++sentences;
 						}
 						goto nextWord;
 					}
 					ssize_t c = 0;
 
-					if (memmem(word, len, ".", 1)
-						|| memmem(word, len, "?", 1)
-						|| memmem(word, len, "!", 1)) {
-						len = trim(word);
-						if (len == 0)
-							goto nextWord;
-						c = countSyllables(word, len);
+					if (isNewSentence(word, len)) {
 						++sentences;
-					} else {
-						len = trim(word);
-						if (len == 0)
-							goto nextWord;
-						c = countSyllables(word, len);
 					}
+					len = trim(word);
+					if (len == 0)
+						goto nextWord;
+					c = countSyllables(word, len);
 
 					if (c >= 3) {
 						++pollysyllables;
