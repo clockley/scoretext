@@ -117,12 +117,12 @@ static void * processLine(void *a) {
 		doubleNewline = strsep(&req->fields->val, "\r\n\r\n");
 	}
 
-	double wordsOverSentences = ((double)words / (double)sentences);
-	double ari = (4.71 * ((double)characters / (double)words)) + ((.5 * wordsOverSentences) - 21.43);
-	double fleschKincaid = .39 * wordsOverSentences + (11.8 * ((double)syllables / (double)words) - 15.59);
-	double smogScore = ((double)1.0430 * (double)sqrt(pollysyllables * (double)30.0 / (double)sentences)) + 3.1291;
-	double colemanLiau = .0588 * ((((double)characters / (double)words)) * 100.0) - (.269 * (((double)sentences / (double)words)) * 100.0) - 15.8;
-	double avg = (smogScore + fleschKincaid + ari + colemanLiau) / 4.0;
+	var wordsOverSentences = ((double)words / (double)sentences);
+	var ari = (4.71 * ((double)characters / (double)words)) + ((.5 * wordsOverSentences) - 21.43);
+	var fleschKincaid = .39 * wordsOverSentences + (11.8 * ((double)syllables / (double)words) - 15.59);
+	var smogScore = ((double)1.0430 * (double)sqrt(pollysyllables * (double)30.0 / (double)sentences)) + 3.1291;
+	var colemanLiau = .0588 * ((((double)characters / (double)words)) * 100.0) - (.269 * (((double)sentences / (double)words)) * 100.0) - 15.8;
+	var avg = (smogScore + fleschKincaid + ari + colemanLiau) / 4.0;
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 
 	khttp_write(req, b,
