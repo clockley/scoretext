@@ -15,8 +15,10 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+#define __STDC_WANT_DEC_FP__
 #include "grouptext.h"
-
+#include <dfp/math.h>
+#include <math.h>
 const char *vowelDigraphs[] = {
 	"ai", "ay", "au", "aw", "ea", "ee", "ei", "eu", "ew",
 	"air", "ear", "eer", "eir", "eur",
