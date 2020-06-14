@@ -8,11 +8,23 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include <Judy.h>
 struct time {
 	int h, m, s;
 };
+struct __attribute__((__packed__)) wordData {
+	uint32_t count;
+	uint32_t syllables;
+};
+struct wordCxt {
+	Pvoid_t PJArray;
+	struct wordData * PValue;
+	Word_t Bytes;
+};
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
 #define var __auto_type
+
+void registerWord(struct wordCxt *cxt, char *w, size_t len, size_t syllaCount);
 bool isVowel(int c);
 struct time calcReadingTime(size_t words);
 struct time calcSpeakingTime(size_t words);

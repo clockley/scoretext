@@ -24,6 +24,39 @@ const char *vowelDigraphs[] = {
 	"ion", "ial"
 };
 
+static __thread unsigned int maxStrSize = 0;
+
+void newWordJudy(struct wordCxt *cxt) {
+	cxt->PJArray = cxt->PValue = cxt->Bytes = 0;
+}
+
+void registerWord(struct wordCxt *cxt, char *w, size_t len, size_t syllaCount) {
+	JSLI(cxt->PValue, cxt->PJArray, w);
+
+	if (maxStrSize < len) {
+		maxStrSize = len;
+	}
+
+	++(*cxt->PValue).count;
+	(*cxt->PValue).syllables = syllaCount;
+}
+
+void freeWordJudy(struct wordCxt *cxt) {
+	JSLFA(cxt->Bytes, cxt->PJArray);
+}
+
+size_t uniqueWords(struct wordCxt * cxt) {
+	char * tmp = malloc(maxStrSize);
+	JSLF(cxt->PValue, cxt->PJArray, "");
+	size_t u = 0;
+	while ((void*)cxt->PValue != NULL) {
+		if ((*cxt->PValue).count == 1) {
+			++u;
+		}
+		JSLN(cxt->PValue, cxt->PJArray, tmp); 
+	}
+	free(tmp);
+}
 
 void calcScores(double words, double sentences, double characters, double syllables,  double pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
 	var wordsOverSentences = words / sentences;

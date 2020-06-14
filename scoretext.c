@@ -36,7 +36,7 @@
 #include "grouptext.h"
 #include "pool.h"
 
-static const char *jsonFmt = "{\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
+static const char *jsonFmt = "{\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li, %i]}";
 
 static void * processLine(void *a) {
 	struct kreq * req = a;
@@ -46,6 +46,7 @@ static void * processLine(void *a) {
 	size_t syllables = 0;
 	size_t pollysyllables = 0;
 	size_t paragraph = 0;
+	struct wordCxt cxt;
 	char *b = NULL;
 
 	if (!req->fields) {
@@ -94,6 +95,7 @@ static void * processLine(void *a) {
 					if (len == 0)
 						goto nextWord;
 					ssize_t c = countSyllables(word, len);
+					registerWord(&cxt, word, len, c);
 
 					if (c >= 3) {
 						++pollysyllables;
@@ -120,7 +122,7 @@ static void * processLine(void *a) {
 	calcScores(words, sentences, characters, syllables, pollysyllables, &avg, &ari, &fleschKincaid, &smogScore, &colemanLiau);
 	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
-			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph));
+			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph, uniqueWords(&cxt)));
  endRequest:
 	khttp_free(req);
 	free(b);
