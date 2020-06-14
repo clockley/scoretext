@@ -37,8 +37,8 @@ void registerWord(struct wordCxt *cxt, char *w, size_t len, size_t syllaCount) {
 		maxStrSize = len;
 	}
 
-	++(*cxt->PValue).count;
-	(*cxt->PValue).syllables = syllaCount;
+	++cxt->PValue->count;
+	cxt->PValue->syllables = syllaCount;
 }
 
 void freeWordJudy(struct wordCxt *cxt) {
@@ -56,6 +56,7 @@ size_t uniqueWords(struct wordCxt * cxt) {
 		JSLN(cxt->PValue, cxt->PJArray, tmp); 
 	}
 	free(tmp);
+	return u;
 }
 
 void calcScores(double words, double sentences, double characters, double syllables,  double pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
