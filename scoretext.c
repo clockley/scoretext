@@ -115,7 +115,7 @@ static void * processLine(void *a) {
 		doubleNewline = strsep(&req->fields->val, "\r\n\r\n");
 	}
 
-	_Decimal64 ari, fleschKincaid, smogScore, colemanLiau, avg;
+	double ari, fleschKincaid, smogScore, colemanLiau, avg;
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 	calcScores(words, sentences, characters, syllables, pollysyllables, &avg, &ari, &fleschKincaid, &smogScore, &colemanLiau);
 	khttp_write(req, b,

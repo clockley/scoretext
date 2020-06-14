@@ -313,7 +313,7 @@ static void * processLine(void *a) {
 		doubleNewline = strsep(&buf, "\n\n");
 	}
 
-	_Decimal64 ari, fleschKincaid, smogScore, colemanLiau, avg;
+	double ari, fleschKincaid, smogScore, colemanLiau, avg;
 	calcScores(words, sentences, characters, syllables, pollysyllables, &avg, &ari, &fleschKincaid, &smogScore, &colemanLiau);
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 
