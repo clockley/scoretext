@@ -229,7 +229,7 @@ size_t trim(char *szWrite) {
 	int bNotSpace;
 
 	while (*szRead != '\0') {
-		bNotSpace = !(*szRead <= 64 || *szRead >= 123 || !(*szRead < 90 || *szRead > 97));
+		bNotSpace = !(*szRead <= 64 || *szRead >= 123 || !(*szRead < 90 || *szRead > 96));
 		if ((szWrite != szWriteOrig) || bNotSpace) {
 			*szWrite = *szRead;
 			szWrite++;
