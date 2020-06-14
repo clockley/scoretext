@@ -47,9 +47,7 @@ size_t uniqueWords(struct wordCxt * cxt) {
 	JSLF(cxt->PValue, cxt->PJArray, tmp);
 	size_t u = 0;
 	while ((void*)cxt->PValue != NULL) {
-		if (cxt->PValue->count == 1) {
-			++u;
-		}
+		++u;
 		JSLN(cxt->PValue, cxt->PJArray, tmp); 
 	}
 	free(tmp);
