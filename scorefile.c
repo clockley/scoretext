@@ -47,7 +47,7 @@
 #include "pool.h"
 #include "pdf.h"
 
-static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li]}";
+static const char *jsonFmt = "\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li, %i]}";
 static pthread_mutex_t libOPCMutex = PTHREAD_MUTEX_INITIALIZER;
 static __thread bool WindowsLineEndings = false;
 
@@ -171,6 +171,7 @@ static void * processFile(void *a) {
 	size_t syllables = 0;
 	size_t pollysyllables = 0;
 	size_t paragraph = 0;
+	struct wordCxt cxt = {0};
 	char *buf = NULL;
 	char *b = NULL;
 	size_t size = 0;
@@ -239,6 +240,7 @@ static void * processFile(void *a) {
 					if (len == 0)
 						goto nextWord;
 					ssize_t c = countSyllables(word, len);
+					registerWord(&cxt, word, len, c);
 
 					if (c >= 3) {
 						++pollysyllables;
@@ -266,8 +268,8 @@ static void * processFile(void *a) {
 
 	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
-			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph));
-
+			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph, uniqueWords(&cxt)));
+	freeWordJudy(&cxt);
  endRequest:
 	free(buf);
 	free(b);
