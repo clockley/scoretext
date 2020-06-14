@@ -53,7 +53,7 @@ size_t uniqueWords(struct wordCxt * cxt) {
 		JSLN(cxt->PValue, cxt->PJArray, tmp); 
 	}
 	free(tmp);
-	return u;
+	return u + 1;
 }
 
 void calcScores(double words, double sentences, double characters, double syllables,  double pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
