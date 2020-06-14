@@ -46,7 +46,7 @@ static void * processLine(void *a) {
 	size_t syllables = 0;
 	size_t pollysyllables = 0;
 	size_t paragraph = 0;
-	struct wordCxt cxt;
+	struct wordCxt cxt = {0};
 	char *b = NULL;
 
 	if (!req->fields) {
@@ -123,6 +123,7 @@ static void * processLine(void *a) {
 	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
 			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph, uniqueWords(&cxt)));
+	freeWordJudy(&cxt);
  endRequest:
 	khttp_free(req);
 	free(b);

@@ -26,10 +26,6 @@ const char *vowelDigraphs[] = {
 
 static __thread unsigned int maxStrSize = 0;
 
-void newWordJudy(struct wordCxt *cxt) {
-	cxt->PJArray = cxt->PValue = cxt->Bytes = 0;
-}
-
 void registerWord(struct wordCxt *cxt, char *w, size_t len, size_t syllaCount) {
 	JSLI(cxt->PValue, cxt->PJArray, w);
 
