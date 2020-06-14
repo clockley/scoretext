@@ -25,12 +25,12 @@ const char *vowelDigraphs[] = {
 };
 
 
-void calcScores(size_t words, size_t sentences, size_t characters, size_t syllables,  size_t pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
-	var wordsOverSentences = ((double)words / (double)sentences);
-	*ari = (4.71 * ((double)characters / (double)words)) + ((.5 * wordsOverSentences) - 21.43);
-	*fleschKincaid = .39 * wordsOverSentences + (11.8 * ((double)syllables / (double)words) - 15.59);
-	*smogScore = ((double)1.0430 * (double)sqrt(pollysyllables * (double)30.0 / (double)sentences)) + 3.1291;
-	*colemanLiau = .0588 * ((((double)characters / (double)words)) * 100.0) - (.269 * (((double)sentences / (double)words)) * 100.0) - 15.8;
+void calcScores(double words, double sentences, double characters, double syllables,  double pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
+	var wordsOverSentences = words / sentences;
+	*ari = (4.71 * (characters / words)) + ((.5 * wordsOverSentences) - 21.43);
+	*fleschKincaid = .39 * wordsOverSentences + (11.8 * (syllables / words) - 15.59);
+	*smogScore = (1.0430 * sqrt(pollysyllables * 30.0 / sentences)) + 3.1291;
+	*colemanLiau = .0588 * (((characters / words)) * 100.0) - (.269 * ((sentences / words)) * 100.0) - 15.8;
 	*avg = (*smogScore + *fleschKincaid + *ari + *colemanLiau) / 4.0;
 }
 
