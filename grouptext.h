@@ -12,6 +12,7 @@
 struct time {
 	int h, m, s;
 };
+//On 32-bit systems replace uint32_t with uint16_t in the following struct
 struct __attribute__((__packed__)) wordData {
 	uint32_t count;
 	uint32_t syllables;
