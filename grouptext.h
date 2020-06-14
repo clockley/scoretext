@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 struct time {
 	int h, m, s;
 };
