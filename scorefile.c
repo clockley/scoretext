@@ -165,7 +165,7 @@ bool loadAndReadWordFile(char *val, size_t valsz, char ** buf) {
 static void * processFile(void *a) {
 
 	struct kreq * req = a;
-	size_t words = 1;
+	size_t words = 0;
 	size_t characters = 0;
 	size_t sentences = 0;
 	size_t syllables = 0;

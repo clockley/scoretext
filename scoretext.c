@@ -40,7 +40,7 @@ static const char *jsonFmt = "{\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.
 
 static void * processLine(void *a) {
 	struct kreq * req = a;
-	size_t words = 1;
+	size_t words = 0;
 	size_t characters = 0;
 	size_t sentences = 0;
 	size_t syllables = 0;
