@@ -122,7 +122,7 @@ static void * processLine(void *a) {
 	calcScores(words, sentences, characters, syllables, pollysyllables, &avg, &ari, &fleschKincaid, &smogScore, &colemanLiau);
 	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
-			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph, 0));
+			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph, uniqueWords(&cxt)));
  endRequest:
 	khttp_free(req);
 	free(b);

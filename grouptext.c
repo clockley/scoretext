@@ -47,7 +47,8 @@ void freeWordJudy(struct wordCxt *cxt) {
 
 size_t uniqueWords(struct wordCxt * cxt) {
 	char * tmp = malloc(maxStrSize);
-	JSLF(cxt->PValue, cxt->PJArray, "");
+	tmp[0] = '\0';
+	JSLF(cxt->PValue, cxt->PJArray, tmp);
 	size_t u = 0;
 	while ((void*)cxt->PValue != NULL) {
 		if ((*cxt->PValue).count == 1) {
