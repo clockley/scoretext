@@ -51,7 +51,7 @@ size_t uniqueWords(struct wordCxt * cxt) {
 		JSLN(cxt->PValue, cxt->PJArray, tmp); 
 	}
 	free(tmp);
-	return u + 1;
+	return u;
 }
 
 void calcScores(double words, double sentences, double characters, double syllables,  double pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau) {
@@ -229,7 +229,7 @@ size_t trim(char *szWrite) {
 	int bNotSpace;
 
 	while (*szRead != '\0') {
-		bNotSpace = !(*szRead <= 64 || *szRead >= 123 || !(*szRead < 90 || *szRead > 96));
+		bNotSpace = !isspace(*szRead);
 		if ((szWrite != szWriteOrig) || bNotSpace) {
 			*szWrite = *szRead;
 			szWrite++;
