@@ -33,7 +33,7 @@ void registerWord(struct wordCxt *cxt, char *w, size_t len, size_t syllaCount) {
 		maxStrSize = len;
 	}
 
-	++cxt->PValue->count;
+	++(cxt->PValue->count);
 	cxt->PValue->syllables = syllaCount;
 }
 

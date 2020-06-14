@@ -36,4 +36,6 @@ size_t trim(char *szWrite);
 bool isWebsite(const void *, size_t);
 bool isNewSentence(const void *, size_t);
 void calcScores(double words, double sentences, double characters, double syllables,  double pollysyllables, double * avg, double *ari, double *fleschKincaid, double *smogScore, double * colemanLiau);
+size_t uniqueWords(struct wordCxt * cxt);
+void freeWordJudy(struct wordCxt *cxt);
 #endif
