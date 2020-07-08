@@ -1,4 +1,4 @@
-#include "grouptext.h"
+#include "textutils.h"
 /*
  * Base64 encoding/decoding (RFC1341)
  * Copyright (c) 2005-2011, Jouni Malinen <j@w1.fi>

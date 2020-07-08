@@ -43,7 +43,7 @@
 #include <unistd.h>
 #include <magic.h>
 #include <stdio.h>
-#include "grouptext.h"
+#include "textutils.h"
 #include "pool.h"
 #include "pdf.h"
 

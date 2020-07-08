@@ -39,7 +39,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "json.h"
-#include "grouptext.h"
+#include "textutils.h"
 #include "pool.h"
 #include "pdf.h"
 #include "base64.h"

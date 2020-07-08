@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <curl/curl.h>
-#include "grouptext.h"
+#include "textutils.h"
 #include <magic.h>
 
 #define DOCCONVERSIONURL "http://localhost:4567/uploadPDF"

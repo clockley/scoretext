@@ -33,7 +33,7 @@
 #include <ctype.h>
 #include <kcgi.h>
 #include <errno.h>
-#include "grouptext.h"
+#include "textutils.h"
 #include "pool.h"
 
 static const char *jsonFmt = "{\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li, %i]}";
