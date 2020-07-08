@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <Judy.h>
+
 struct time {
 	int h, m, s;
 };

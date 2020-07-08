@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-s -std=gnu11 -lkcgi -lz -lm -lopc -I/usr/include/libxml2/ -lmce -lxml2 -lpthread -lmagic -lcurl -ldfp -lJudy -flto -O2
-DEPS = textutils.h textutils.c json.c json.h pool.h base64.c base64.h pdf.h pdf.c
+CFLAGS=-s -std=gnu11 -lkcgi -lz -lm -lopc -I MITIE/mitielib/include/mitie -I/usr/include/libxml2/ -lmce -lxml2 -lpthread -lmagic -lcurl -ldfp -lJudy -L MITIE/mitielib/ -Bstatic -lstdc++ MITIE/mitielib/libmitie.a -flto -O2
+DEPS = textutils.h textutils.c json.c json.h pool.h base64.c base64.h pdf.h pdf.c ner.c ner.h
 
 all: textscore scorefile scoreurl
 

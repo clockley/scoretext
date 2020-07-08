@@ -35,7 +35,7 @@
 #include <errno.h>
 #include "textutils.h"
 #include "pool.h"
-
+#include "ner.h"
 static const char *jsonFmt = "{\"S\":[%li,%li,%li,%li,%li,\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%.1f\",\"%02i:%02i:%02i\",\"%02i:%02i:%02i\",%li, %i]}";
 
 static void * processLine(void *a) {
@@ -52,6 +52,7 @@ static void * processLine(void *a) {
 	if (!req->fields) {
 		goto endRequest;
 	}
+	loadText(&req->fields->val);
 	char * doubleNewline = strsep(&req->fields->val, "\r\n\r\n");
 	while (doubleNewline) {
 		if (*doubleNewline == '\0')
@@ -120,6 +121,8 @@ static void * processLine(void *a) {
 	double ari, fleschKincaid, smogScore, colemanLiau, avg;
 	struct time rt = calcReadingTime(words), st = calcSpeakingTime(words);
 	calcScores(words, sentences, characters, syllables, pollysyllables, &avg, &ari, &fleschKincaid, &smogScore, &colemanLiau);
+	fprintf(stderr, "%s\n", getWords());
+	freeText();
 	khttp_write(req, b,
 		    asprintf(&b, jsonFmt, words, characters, sentences,
 			     syllables, pollysyllables, smogScore, fleschKincaid, ari, colemanLiau, avg, rt.h, rt.m, rt.s, st.h, st.m, st.s, paragraph, uniqueWords(&cxt)));
@@ -135,7 +138,9 @@ int main(void) {
 	struct kfcgi *fcgi = NULL;
 
 	ThreadPoolNew();
-
+	if (!initNer()) {
+		return 1;
+	}
 	if (KCGI_OK != khttp_fcgi_init(&fcgi, NULL, 0, NULL, 0, 0)) {
 		return 0;
 	}
@@ -148,6 +153,6 @@ int main(void) {
 	}
 
 	ThreadPoolCancel();
-
+	freeNer();
 	khttp_fcgi_child_free(fcgi);
 }
