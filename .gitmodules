@@ -1,0 +1,3 @@
+[submodule "MITIE"]
+	path = MITIE
+	url = https://github.com/mit-nlp/MITIE/
